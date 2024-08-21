@@ -20,6 +20,7 @@ import {
 import { RootState } from "../../store/store";
 import { getTimeFromSeconds } from "../../utils/helper";
 import PlayPause from "../PlayPause";
+import RangeInput from "../RangeInput";
 
 const AudioPlayer = ({ slug }: { slug: string }) => {
   const dispatch = useDispatch();
@@ -108,15 +109,14 @@ const AudioPlayer = ({ slug }: { slug: string }) => {
     };
   }, [audioRef, episode, playNextHandler, time]);
 
-  const onVolumeChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setVolume(+event.target.value);
-    if (audioRef.current) audioRef.current.volume = +event.target.value;
+  const onVolumeChange = (value: number) => {
+    setVolume(value);
+    if (audioRef.current) audioRef.current.volume = value;
   };
 
-  const onAudioChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setTime(Math.round(Number(event.target.value)));
-    if (audioRef.current)
-      audioRef.current.currentTime = Number(event.target.value);
+  const onAudioChange = (value: number) => {
+    setTime(Math.round(Number(value)));
+    if (audioRef.current) audioRef.current.currentTime = Number(value);
   };
 
   const togglePlayPause = () => {
@@ -143,13 +143,12 @@ const AudioPlayer = ({ slug }: { slug: string }) => {
           <p className="text-xs line-clamp-2">{episode?.name}</p>
         </div>
         <div className="w-[50%] lg:w-[80%] m-auto">
-          <input
-            value={time}
+          <RangeInput
             max={episode.duration}
+            value={time}
             onChange={onAudioChange}
-            type="range"
-            className="w-full hidden mb-3 lg:block accent-primary h-1 outline-none bg-gray-100 rounded-lg cursor-pointer"
           />
+
           <div className="flex gap-3 lg:gap-6 justify-center">
             <button onClick={playPrevHandler}>
               <img
@@ -182,16 +181,13 @@ const AudioPlayer = ({ slug }: { slug: string }) => {
               {getTimeFromSeconds(episode?.duration)}
             </span>
           </p>
-          <div className="md:flex items-center hidden gap-2">
+          <div className="md:flex items-end hidden gap-2">
             <img src={Volume} alt="voice-icon" className="w-6" />
-            <input
-              value={volume}
+            <RangeInput
               max={1}
-              min={0}
-              step="0.01"
+              value={volume}
               onChange={onVolumeChange}
-              type="range"
-              className="w-full accent-black h-1 outline-none rounded-lg cursor-pointer"
+              className="!accent-black"
             />
           </div>
         </div>
