@@ -21,8 +21,16 @@ Before running the app, you will need to update the values in `.env` file.
 
 To run the application:
 
+- Install the dependencies
 - Create the build
 - Run the build
+
+To install the dependencies:
+
+```
+npm install -g pnpm
+pnpm i
+```
 
 To create the build:
 
@@ -36,6 +44,6 @@ To run the build:
 pnpm preview
 ```
 
-Open [http://localhost:5174](http://localhost:5174) with your browser to see the result.
+Console will bring the url for running application.
 
 You can start editing the page by modifying `src/pages/homeScreen/page.tsx`. The page auto-updates as you edit the file.
