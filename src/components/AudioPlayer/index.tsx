@@ -1,13 +1,12 @@
 import { ChangeEvent, FC, useEffect, useRef, useState } from "react";
 
 import Next from "/next.svg";
-import Play from "/play.svg";
 import Prev from "/prev.svg";
-import Pause from "/pause.svg";
 import Volume from "/volume.svg";
 
 import { IEpisode } from "../../types/Episode";
 import { getTimeFromSeconds } from "../../utils/helper";
+import PlayPause from "../PlayPause";
 
 type AudioPlayerProps = {
   isPlaying: boolean;
@@ -117,11 +116,9 @@ const AudioPlayer: FC<AudioPlayerProps> = ({
               alt="prev-icon"
               src={Prev}
             />
-            <img
-              className="lg:w-7 w-5 cursor-pointer"
-              onClick={togglePlayPause}
-              alt="play-pause-icon"
-              src={isPlaying ? Pause : Play}
+            <PlayPause
+              isPlaying={isPlaying}
+              togglePlayPause={togglePlayPause}
             />
             <img
               onClick={playNext}

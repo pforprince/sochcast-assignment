@@ -1,6 +1,5 @@
 import { FC } from "react";
-import Pause from "/pause.svg";
-import Play from "/play.svg";
+import PlayPause from "../../../components/PlayPause";
 import { IEpisode } from "../../../types/Episode";
 import { getTimeFromSeconds } from "../../../utils/helper";
 
@@ -23,6 +22,15 @@ const Episode: FC<EpisodeProps> = ({
   setIsPlaying,
   isPlaying,
 }) => {
+  const togglePlayPause = () => {
+    if (isPlaying && playingEpisode?.id === episode.id) {
+      setIsPlaying(false);
+    } else {
+      setPlayingEpisode(episode);
+      setIsPlaying(true);
+    }
+  };
+
   return (
     <div
       className={`flex my-4 items-center gap-1 lg:gap-2 border hover:shadow-sm hover:border-primary p-2 rounded-md
@@ -42,19 +50,7 @@ const Episode: FC<EpisodeProps> = ({
         </div>
         <div className="flex gap-3 items-center w-[25%] justify-end lg:w-[10%]">
           <p className="w-12">{getTimeFromSeconds(episode.duration)}</p>
-          <img
-            onClick={() => {
-              if (isPlaying && playingEpisode?.id === episode.id) {
-                setIsPlaying(false);
-              } else {
-                setPlayingEpisode(episode);
-                setIsPlaying(true);
-              }
-            }}
-            className="h-5"
-            src={isPlaying && playingEpisode?.id === episode.id ? Pause : Play}
-            alt="play-button"
-          />
+          <PlayPause isPlaying={isPlaying} togglePlayPause={togglePlayPause} />
         </div>
       </div>
     </div>
