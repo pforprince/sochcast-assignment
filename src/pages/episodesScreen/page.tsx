@@ -13,7 +13,7 @@ const EpisodesScreen = () => {
     return;
   }
 
-  return <Episodes slug={slug!} />;
+  return <Episodes slug={slug} />;
 };
 
 export default EpisodesScreen;

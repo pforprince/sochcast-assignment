@@ -46,7 +46,8 @@ const AudioPlayer: FC<AudioPlayerProps> = ({
       const now = Date.now();
 
       if (now - timerRef.current > 1000) {
-        setTime(Math.round(audioRef.current.currentTime!));
+        // updating time every 1 second
+        setTime(Math.round(audioRef.current.currentTime));
         timerRef.current = now;
       }
     }

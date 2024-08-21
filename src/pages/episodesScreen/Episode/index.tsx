@@ -6,6 +6,7 @@ import { getTimeFromSeconds } from "../../../utils/helper";
 
 type EpisodeProps = {
   episode: IEpisode;
+  index: number;
   playingEpisode: IEpisode | undefined;
   setPlayingEpisode: (episode?: IEpisode) => void;
   setIsPlaying: (isPlaying: boolean) => void;
@@ -16,6 +17,7 @@ const selectedClasses = "border-primary border bg-orange-50";
 
 const Episode: FC<EpisodeProps> = ({
   episode,
+  index,
   playingEpisode,
   setPlayingEpisode,
   setIsPlaying,
@@ -23,12 +25,11 @@ const Episode: FC<EpisodeProps> = ({
 }) => {
   return (
     <div
-      key={episode.id}
       className={`flex my-4 items-center gap-1 lg:gap-2 border hover:shadow-sm hover:border-primary p-2 rounded-md
     ${episode.id == playingEpisode?.id ? selectedClasses : ""}
     `}
     >
-      <p className="text-gray-500">{episode.episode_number}</p>
+      <p className="text-gray-500">{index}</p>
       <div
         className={`flex justify-between cursor-pointer gap-4 lg:gap-0 w-full px-2 items-center gap-2 `}
       >

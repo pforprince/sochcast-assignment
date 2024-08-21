@@ -98,14 +98,15 @@ const Episodes: FC<EpisodeProps> = ({ slug }) => {
           <Heading title="Episodes" />
 
           <div>
-            {episodes?.map((episode) => (
+            {episodes?.map((episode, index) => (
               <Episode
+                index={index + 1}
+                episode={episode}
                 key={episode.id}
                 isPlaying={isPlaying}
                 setIsPlaying={setIsPlaying}
                 playingEpisode={playingEpisode}
                 setPlayingEpisode={setPlayingEpisode}
-                episode={episode}
               />
             ))}
           </div>

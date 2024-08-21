@@ -31,7 +31,11 @@ const episodeSlice = createSlice({
         (episode) => episode.slug === action.payload.slug
       );
       if (episode) {
-        episode.episodes = action.payload.episodes;
+        const data = action.payload.episodes;
+        // sort episodes by episode number
+        episode.episodes = data.sort(
+          (a: IEpisode, b: IEpisode) => a.episode_number - b.episode_number
+        );
       } else {
         state.values.push(action.payload);
       }
