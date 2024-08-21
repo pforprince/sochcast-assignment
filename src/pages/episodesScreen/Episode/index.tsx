@@ -30,16 +30,16 @@ const Episode: FC<EpisodeProps> = ({
     >
       <p className="text-gray-500">{episode.episode_number}</p>
       <div
-        className={`flex justify-between cursor-pointer w-full px-2 items-center gap-2 `}
+        className={`flex justify-between cursor-pointer gap-4 lg:gap-0 w-full px-2 items-center gap-2 `}
       >
-        <div className="flex gap-2 items-center">
+        <div className="flex gap-2 items-center w-[75%] lg:w-[85%]">
           <img
             className="w-10 rounded-md"
             src={episode.episode_compressed_image}
           />
           <p className="line-clamp-2 text-sm lg:text-lg">{episode.name}</p>
         </div>
-        <div className="flex gap-3 items-center">
+        <div className="flex gap-3 items-center w-[25%] justify-end lg:w-[10%]">
           <p className="w-12">{getTimeFromSeconds(episode.duration)}</p>
           <img
             onClick={() => {
