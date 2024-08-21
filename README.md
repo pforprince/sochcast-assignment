@@ -33,7 +33,7 @@ pnpm build
 To run the build:
 
 ```
-pnpm start
+pnpm preview
 ```
 
 Open [http://localhost:5174](http://localhost:5174) with your browser to see the result.

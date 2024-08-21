@@ -87,7 +87,11 @@ const Episodes: FC<EpisodeProps> = ({ slug }) => {
         <div className="pb-28">
           {show && (
             <div className="flex items-center gap-3 mb-4">
-              <img className="w-16 lg:w-20 rounded-md" src={show?.show_image} />
+              <img
+                alt={show.name}
+                className="w-16 lg:w-20 rounded-md"
+                src={show?.show_image}
+              />
               <p className="text-xl lg:text-3xl">{show?.name}</p>
             </div>
           )}
