@@ -1,34 +1,57 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { IShow } from "../../../types/Show";
 import Heading from "../../../components/Heading";
+
+import { RootState } from "../../../store/store";
+import { IShow } from "../../../types/Show";
 import { BASE_URL } from "../../../utils/constants";
+import Loader from "../../../components/Loader";
+import {
+  fetchShows,
+  fetchShowsFailure,
+  fetchShowsStart,
+} from "../../../store/slices/showSlice";
 
 const Shows = () => {
   const url = `${BASE_URL}/listener/sochcast-originals`;
 
-  const [showList, setShowList] = useState<IShow[]>([]);
+  const { shows, loading, error } = useSelector(
+    (state: RootState) => state.show
+  );
 
-  const fetchShows = () => {
+  const dispatch = useDispatch();
+
+  const fetchShowHandler = useCallback(() => {
+    dispatch(fetchShowsStart());
     fetch(url)
       .then((response) => response.json())
-      .then((data) => setShowList((data.results as IShow[]) || []))
-      .catch(console.error);
-  };
+      .then((data) => {
+        const showsList = (data.results as IShow[]) || [];
+        dispatch(fetchShows(showsList));
+      })
+      .catch((e) => {
+        console.error(e);
+        dispatch(fetchShowsFailure("Failed to fetch shows"));
+      });
+  }, [dispatch, url]);
 
   useEffect(() => {
-    // fetch the shows
-    fetchShows();
-  }, []);
+    if (!shows.length) fetchShowHandler();
+  }, [fetchShowHandler, shows.length]);
+
+  if (loading) return <Loader />;
+
+  if (error) return <p>{error}</p>;
 
   return (
     <div className="my-6">
       <Heading title="Shows" />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-x-3 mt-4">
-        {showList?.length ? (
-          showList?.map((show) => (
+        {shows?.length ? (
+          shows?.map((show) => (
             <Link
               to={`/episodes/${show.slug}`}
               key={show.id}
