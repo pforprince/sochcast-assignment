@@ -2,24 +2,21 @@ import { FC, useCallback, useEffect, useState } from "react";
 import { IEpisode } from "../../../types/Episode";
 import { IShow } from "../../../types/Show";
 
-import Episode from "../Episode";
+import { useDispatch, useSelector } from "react-redux";
+import AudioPlayer from "../../../components/AudioPlayer";
 import Heading from "../../../components/Heading";
 import Layout from "../../../components/Layout";
-import AudioPlayer from "../../../components/AudioPlayer";
-import { BASE_URL } from "../../../utils/constants";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../../store/store";
 import Loader from "../../../components/Loader";
-import { fetchEpisodes } from "../../../store/slices/episodeSlice";
+import { fetchEpisodesSuccess } from "../../../store/slices/episodeSlice";
+import { RootState } from "../../../store/store";
+import { BASE_URL } from "../../../utils/constants";
+import Episode from "../Episode";
 
 type EpisodeProps = {
   slug: string;
 };
 
 const Episodes: FC<EpisodeProps> = ({ slug }) => {
-  const [playingEpisode, setPlayingEpisode] = useState<IEpisode>();
-  const [isPlaying, setIsPlaying] = useState(false);
-
   const dispatch = useDispatch();
 
   const { values, error, loading } = useSelector(
@@ -38,34 +35,12 @@ const Episodes: FC<EpisodeProps> = ({ slug }) => {
       .then((response) => response.json())
       .then((data) => {
         const episodes = (data.results as IEpisode[]) || [];
-        dispatch(fetchEpisodes({ slug, episodes }));
+        dispatch(fetchEpisodesSuccess({ slug, episodes }));
 
         setShow(data.results[0].shows[0] as IShow);
       })
       .catch(console.error);
   }, []);
-
-  // function to play next audio file
-  const playNext = () => {
-    const currentIndex = episodes.findIndex(
-      (episode) => episode.id === playingEpisode?.id
-    );
-
-    if (currentIndex !== -1 && currentIndex !== episodes.length - 1) {
-      setPlayingEpisode(episodes[currentIndex + 1]);
-    }
-  };
-
-  // function to play previous audio file
-  const playPrev = () => {
-    const currentIndex = episodes.findIndex(
-      (episode) => episode.id === playingEpisode?.id
-    );
-
-    if (currentIndex !== -1 && currentIndex !== 0) {
-      setPlayingEpisode(episodes[currentIndex - 1]);
-    }
-  };
 
   useEffect(() => {
     const existingEpisode = values.find((episode) => episode.slug === slug);
@@ -90,35 +65,21 @@ const Episodes: FC<EpisodeProps> = ({ slug }) => {
               <img
                 alt={show.name}
                 className="w-16 lg:w-20 rounded-md"
-                src={show?.show_image}
+                src={show.show_image}
               />
-              <p className="text-xl lg:text-3xl">{show?.name}</p>
+              <p className="text-xl lg:text-3xl">{show.name}</p>
             </div>
           )}
           <Heading title="Episodes" />
 
           <div>
             {episodes?.map((episode, index) => (
-              <Episode
-                index={index + 1}
-                episode={episode}
-                key={episode.id}
-                isPlaying={isPlaying}
-                setIsPlaying={setIsPlaying}
-                playingEpisode={playingEpisode}
-                setPlayingEpisode={setPlayingEpisode}
-              />
+              <Episode index={index + 1} episode={episode} key={episode.id} />
             ))}
           </div>
         </div>
       </Layout>
-      <AudioPlayer
-        playNext={playNext}
-        playPrev={playPrev}
-        episode={playingEpisode}
-        isPlaying={isPlaying}
-        setIsPlaying={setIsPlaying}
-      />
+      <AudioPlayer slug={slug} />
     </div>
   );
 };

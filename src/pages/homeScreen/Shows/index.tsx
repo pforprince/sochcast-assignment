@@ -9,7 +9,7 @@ import { IShow } from "../../../types/Show";
 import { BASE_URL } from "../../../utils/constants";
 import Loader from "../../../components/Loader";
 import {
-  fetchShows,
+  fetchShowsSuccess,
   fetchShowsFailure,
   fetchShowsStart,
 } from "../../../store/slices/showSlice";
@@ -29,7 +29,7 @@ const Shows = () => {
       .then((response) => response.json())
       .then((data) => {
         const showsList = (data.results as IShow[]) || [];
-        dispatch(fetchShows(showsList));
+        dispatch(fetchShowsSuccess(showsList));
       })
       .catch((e) => {
         console.error(e);

@@ -8,7 +8,7 @@ const EpisodesScreen = () => {
   const { slug } = params;
 
   if (!slug) {
-    // if slug is not present, return null;
+    // if slug is not present, redirect to home;
     navigate("/");
     return;
   }

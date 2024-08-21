@@ -20,7 +20,7 @@ const showSlice = createSlice({
     fetchShowsStart(state) {
       state.loading = true;
     },
-    fetchShows(state, action: PayloadAction<IShow[]>) {
+    fetchShowsSuccess(state, action: PayloadAction<IShow[]>) {
       state.loading = false;
       state.shows = action.payload;
     },
@@ -32,7 +32,7 @@ const showSlice = createSlice({
   },
 });
 
-export const { fetchShows, fetchShowsFailure, fetchShowsStart } =
+export const { fetchShowsSuccess, fetchShowsFailure, fetchShowsStart } =
   showSlice.actions;
 
 export default showSlice.reducer;

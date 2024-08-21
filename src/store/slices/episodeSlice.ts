@@ -25,15 +25,15 @@ const episodeSlice = createSlice({
     fetchEpisodesStart(state) {
       state.loading = true;
     },
-    fetchEpisodes(state, action) {
+    fetchEpisodesSuccess(state, action) {
       state.loading = false;
-      const episode = state.values.find(
-        (episode) => episode.slug === action.payload.slug
+      const showToUpdate = state.values.find(
+        (show) => show.slug === action.payload.slug
       );
-      if (episode) {
+      if (showToUpdate) {
         const data = action.payload.episodes;
         // sort episodes by episode number
-        episode.episodes = data.sort(
+        showToUpdate.episodes = data.sort(
           (a: IEpisode, b: IEpisode) => a.episode_number - b.episode_number
         );
       } else {
@@ -47,6 +47,9 @@ const episodeSlice = createSlice({
   },
 });
 
-export const { fetchEpisodes, fetchEpisodesFailure, fetchEpisodesStart } =
-  episodeSlice.actions;
+export const {
+  fetchEpisodesSuccess,
+  fetchEpisodesFailure,
+  fetchEpisodesStart,
+} = episodeSlice.actions;
 export default episodeSlice.reducer;

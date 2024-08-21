@@ -1,40 +1,78 @@
-import { ChangeEvent, FC, useEffect, useRef, useState } from "react";
+import {
+  ChangeEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 import Next from "/next.svg";
 import Prev from "/prev.svg";
 import Volume from "/volume.svg";
 
-import { IEpisode } from "../../types/Episode";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  setEpisode,
+  stopPlayer,
+  togglePlay,
+} from "../../store/slices/playerSlice";
+import { RootState } from "../../store/store";
 import { getTimeFromSeconds } from "../../utils/helper";
 import PlayPause from "../PlayPause";
 
-type AudioPlayerProps = {
-  isPlaying: boolean;
-  episode?: IEpisode;
-  playNext: () => void;
-  playPrev: () => void;
-  setIsPlaying: (isPlaying: boolean) => void;
-};
-
-const AudioPlayer: FC<AudioPlayerProps> = ({
-  episode,
-  setIsPlaying,
-  isPlaying,
-  playNext,
-  playPrev,
-}) => {
+const AudioPlayer = ({ slug }: { slug: string }) => {
+  const dispatch = useDispatch();
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const timerRef = useRef<number>(0);
 
   const [time, setTime] = useState<number>(0);
   const [volume, setVolume] = useState<number>(50);
 
-  useEffect(() => {
-    setTime(0);
-    if (audioRef.current) audioRef.current.play();
-  }, [episode]);
+  const player = useSelector((state: RootState) => state.player);
+  const { values } = useSelector((state: RootState) => state.episode);
+
+  const episode = player.episode;
+  const isPlaying = player.isPlaying;
+
+  const episodes = useMemo(() => {
+    return values.find((episode) => episode.slug === slug)?.episodes || [];
+  }, [values, slug]);
+
+  const playNextHandler = useCallback(() => {
+    const currentIndex = episodes.findIndex(
+      (episode) => episode.id === player?.episode?.id
+    );
+    if (currentIndex !== -1 && currentIndex !== episodes.length - 1) {
+      dispatch(setEpisode(episodes[currentIndex + 1]));
+    }
+  }, [dispatch, episodes, player?.episode?.id]);
+
+  const playPrevHandler = () => {
+    const currentIndex = episodes.findIndex(
+      (episode) => episode.id === player?.episode?.id
+    );
+
+    if (currentIndex !== -1 && currentIndex !== 0) {
+      dispatch(setEpisode(episodes[currentIndex - 1]));
+    }
+  };
 
   useEffect(() => {
+    // if new track is played, set time to 0
+    setTime(0);
+    if (audioRef.current) audioRef.current.play();
+  }, [dispatch, player.episode]);
+
+  useEffect(() => {
+    // stop the player if user has navigated back to home screen
+    return () => {
+      dispatch(stopPlayer());
+    };
+  }, [dispatch]);
+
+  useEffect(() => {
+    // toggle audio
     if (!isPlaying) {
       audioRef.current?.pause();
     } else audioRef.current?.play();
@@ -56,7 +94,7 @@ const AudioPlayer: FC<AudioPlayerProps> = ({
     const audio = audioRef.current;
 
     // play next audio
-    if (time === episode?.duration) playNext();
+    if (time === episode?.duration) playNextHandler();
 
     if (audio) {
       audio.addEventListener("timeupdate", updateTimeHandler);
@@ -68,7 +106,7 @@ const AudioPlayer: FC<AudioPlayerProps> = ({
         audio.removeEventListener("timeupdate", updateTimeHandler);
       }
     };
-  }, [audioRef, episode, playNext, time]);
+  }, [audioRef, episode, playNextHandler, time]);
 
   const onVolumeChange = (event: ChangeEvent<HTMLInputElement>) => {
     setVolume(+event.target.value);
@@ -82,9 +120,13 @@ const AudioPlayer: FC<AudioPlayerProps> = ({
   };
 
   const togglePlayPause = () => {
-    if (isPlaying) audioRef.current?.pause();
-    else audioRef.current?.play();
-    setIsPlaying(!isPlaying);
+    if (isPlaying) {
+      audioRef.current?.pause();
+      dispatch(togglePlay());
+    } else {
+      audioRef.current?.play();
+      dispatch(togglePlay());
+    }
   };
 
   if (!episode) return null;
@@ -108,24 +150,25 @@ const AudioPlayer: FC<AudioPlayerProps> = ({
             type="range"
             className="w-full hidden mb-3 lg:block accent-primary h-1 outline-none bg-gray-100 rounded-lg cursor-pointer"
           />
-
           <div className="flex gap-3 lg:gap-6 justify-center">
-            <img
-              onClick={playPrev}
-              className="lg:w-7 w-5 cursor-pointer"
-              alt="prev-icon"
-              src={Prev}
-            />
+            <button onClick={playPrevHandler}>
+              <img
+                className="lg:w-7 w-5 cursor-pointer"
+                alt="prev-icon"
+                src={Prev}
+              />
+            </button>
             <PlayPause
               isPlaying={isPlaying}
               togglePlayPause={togglePlayPause}
             />
-            <img
-              onClick={playNext}
-              className="lg:w-7 w-5 cursor-pointer"
-              alt="next-icon"
-              src={Next}
-            />
+            <button onClick={playNextHandler}>
+              <img
+                className="lg:w-7 w-5 cursor-pointer"
+                alt="next-icon"
+                src={Next}
+              />
+            </button>
             <audio src={episode.file} ref={audioRef} />
           </div>
         </div>
